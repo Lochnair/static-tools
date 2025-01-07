@@ -2,29 +2,22 @@ pipeline {
     agent {
         docker { image 'lochnair/alpine-sdk:latest' }
     }
-
-    options {
-        // This is required if you want to clean before build
-        skipDefaultCheckout(true)
-    }
     
     stages {
         stage('Prepare') {
             steps {
-                 // Clean before build
-                cleanWs()
-                
-                // We need to explicitly checkout from SCM here
-                checkout scm
+                // Clean before build
+                rm -rf build
+                mkdir -p build
 
                 // Install build dependencies
                 sh 'su-exec root apk add autoconf automake linux-pam-dev ncurses ncurses-dev'
 
                 // Download and extract sources
-                sh 'wget -O- https://gnuftp.uib.no/screen/screen-5.0.0.tar.gz | tar -xzv'
+                sh 'wget -O- https://gnuftp.uib.no/screen/screen-5.0.0.tar.gz | tar --strip-components=1 -xzv -C build'
 
                 // Run autoconf/autogen script if any
-                dir('screen-5.0.0') {
+                dir('build') {
                     sh './autogen.sh'
                 }
             }
@@ -32,7 +25,7 @@ pipeline {
         
         stage('Build') {
             steps {
-                dir('screen-5.0.0') {
+                dir('build') {
                     // Compile with static flags
                     sh '''
                         CFLAGS="-flto=auto -static" LDFLAGS="-static" \
