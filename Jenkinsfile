@@ -17,16 +17,18 @@ pipeline {
         
         stage('Build') {
             steps {
-                sh '''
-                    export CFLAGS="-flto=auto -static" LDFLAGS="-static" \
-                    ./configure \
-                        --prefix=/usr \
-                        --sysconfdir=/etc \
-                        --localstatedir=/var \
-                        --enable-colors256 \
-                        --enable-telnet \
-                        --enable-rxvt_osc
-                '''
+                dir('screen-5.0.0') {
+                    sh '''
+                        CFLAGS="-flto=auto -static" LDFLAGS="-static" \
+                        ./configure \
+                            --prefix=/usr \
+                            --sysconfdir=/etc \
+                            --localstatedir=/var \
+                            --enable-colors256 \
+                            --enable-telnet \
+                            --enable-rxvt_osc
+                    '''
+                }
             }
         }
         
