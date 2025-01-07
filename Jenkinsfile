@@ -28,7 +28,7 @@ pipeline {
                 dir('build') {
                     // Compile with static flags
                     sh '''
-                        CFLAGS="-flto=auto -static" LDFLAGS="-static" \
+                        CFLAGS="-static" \
                         ./configure \
                             --prefix=/usr \
                             --sysconfdir=/etc \
