@@ -7,8 +7,8 @@ pipeline {
         stage('Prepare') {
             steps {
                 // Clean before build
-                rm -rf build
-                mkdir -p build
+                sh 'rm -rf build'
+                sh 'mkdir -p build'
 
                 // Install build dependencies
                 sh 'su-exec root apk add autoconf automake linux-pam-dev ncurses ncurses-dev'
