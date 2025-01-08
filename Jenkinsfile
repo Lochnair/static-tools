@@ -1,6 +1,9 @@
 pipeline {
     agent {
-        docker { image 'lochnair/alpine-sdk:latest' }
+        docker {
+            image 'lochnair/alpine-sdk:latest'
+            reuseNode true
+        }
     }
     
     stages {
@@ -11,7 +14,7 @@ pipeline {
                 sh 'mkdir -p build'
 
                 // Install build dependencies
-                sh 'su-exec root apk add autoconf automake ncurses ncurses-dev ncurses-static'
+                sh 'doas apk add autoconf automake ncurses ncurses-dev ncurses-static'
 
                 // Download and extract sources
                 sh 'wget -O- https://gnuftp.uib.no/screen/screen-5.0.0.tar.gz | tar --strip-components=1 -xzv -C build'
@@ -27,8 +30,8 @@ pipeline {
         // so let's build our own packages with it enabled
         stage('Libpam') {
             steps {
+                sh 'abuild-keygen -a -n -i'
                 dir('linux-pam') {
-                    sh 'abuild-keygen -a -n -i'
                     sh 'abuild -r'
                     sh 'doas apk add ~/packages/main/*.apk'
                 }
