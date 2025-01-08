@@ -7,9 +7,16 @@ pipeline {
         }
     }
     
+    parameters {
+        string defaultValue: '5.0.0', description: 'Version', name: 'VERSION', trim: true
+    }
+
     stages {
         stage('Prepare') {
             steps {
+                // Set build description
+                buildDescription 'screen v${VERSION} - build script commit ${GIT_COMMIT}'
+
                 // Clean before build
                 sh 'rm -rf build'
                 sh 'mkdir -p build'
@@ -18,7 +25,7 @@ pipeline {
                 sh 'doas apk add autoconf automake ncurses ncurses-dev ncurses-static'
 
                 // Download and extract sources
-                sh 'wget -O- https://gnuftp.uib.no/screen/screen-5.0.0.tar.gz | tar --strip-components=1 -xzv -C build'
+                sh 'wget -O- https://gnuftp.uib.no/screen/screen-${VERSION}.tar.gz | tar --strip-components=1 -xzv -C build'
 
                 // Run autoconf/autogen script if any
                 dir('build') {
@@ -51,6 +58,7 @@ pipeline {
                             --localstatedir=/var \
                             --enable-telnet
                         make -j$(nproc)
+                        strip --strip-unneeded screen
                     '''
                 }
             }
