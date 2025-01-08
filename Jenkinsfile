@@ -11,7 +11,7 @@ pipeline {
                 sh 'mkdir -p build'
 
                 // Install build dependencies
-                sh 'su-exec root apk add autoconf automake linux-pam-dev ncurses ncurses-dev'
+                sh 'su-exec root apk add autoconf automake ncurses ncurses-dev ncurses-static'
 
                 // Download and extract sources
                 sh 'wget -O- https://gnuftp.uib.no/screen/screen-5.0.0.tar.gz | tar --strip-components=1 -xzv -C build'
@@ -23,20 +23,30 @@ pipeline {
             }
         }
         
+        // The default libpam package in Alpine doesn't have static libraries,
+        // so let's build our own packages with it enabled
+        stage('Libpam') {
+            steps {
+                dir('linux-pam') {
+                    sh 'abuild-keygen -a -n -i'
+                    sh 'abuild -r'
+                    sh 'doas apk add ~/packages/main/*.apk'
+                }
+            }
+        }
+
         stage('Build') {
             steps {
                 dir('build') {
                     // Compile with static flags
                     sh '''
-                        CFLAGS="-static" \
+                        LDFLAGS="-static" \
                         ./configure \
                             --prefix=/usr \
                             --sysconfdir=/etc \
                             --localstatedir=/var \
-                            --enable-colors256 \
-                            --enable-telnet \
-                            --enable-rxvt_osc
-                        make -j8
+                            --enable-telnet
+                        make -j$(nproc)
                     '''
                 }
             }
@@ -44,7 +54,9 @@ pipeline {
         
         stage('Archive') {
             steps {
-                sh 'echo archive'
+                dir('build') {
+                    archiveArtifacts artifacts: 'screen', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
+                }
             }
         }
     }
