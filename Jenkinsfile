@@ -18,7 +18,7 @@ pipeline {
                 buildDescription "screen v${params.VERSION} - build script commit ${GIT_COMMIT:0:8}"
 
                 // Clean before build
-                sh 'rm -rf build'
+                sh 'rm -rf build packages'
                 sh 'mkdir -p build'
 
                 // Install build dependencies
