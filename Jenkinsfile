@@ -1,6 +1,7 @@
 pipeline {
     agent {
         docker {
+            args '--group-add abuild'
             image 'lochnair/alpine-sdk:latest'
             reuseNode true
         }
