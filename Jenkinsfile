@@ -15,7 +15,7 @@ pipeline {
         stage('Prepare') {
             steps {
                 // Set build description
-                buildDescription "screen v${params.VERSION} - build script commit ${GIT_COMMIT}"
+                buildDescription "screen v${params.VERSION} - build script commit ${GIT_COMMIT:0:8}"
 
                 // Clean before build
                 sh 'rm -rf build'
