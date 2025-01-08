@@ -32,10 +32,10 @@ pipeline {
         stage('Libpam') {
             steps {
                 sh 'abuild-keygen -a -n -i'
-                dir('linux-pam') {
-                    sh 'abuild -r'
-                    sh 'doas apk add ~/packages/main/*.apk'
+                dir('main/linux-pam') {
+                    sh 'env "REPODEST=$WORKSPACE/packages" abuild -r -P'
                 }
+                sh 'doas apk add $(find ./packages -name "*.apk")'
             }
         }
 
