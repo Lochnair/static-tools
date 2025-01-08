@@ -15,7 +15,7 @@ pipeline {
         stage('Prepare') {
             steps {
                 // Set build description
-                buildDescription 'screen v${VERSION} - build script commit ${GIT_COMMIT}'
+                buildDescription 'screen v${params.VERSION} - build script commit ${GIT_COMMIT}'
 
                 // Clean before build
                 sh 'rm -rf build'
@@ -25,7 +25,7 @@ pipeline {
                 sh 'doas apk add autoconf automake ncurses ncurses-dev ncurses-static'
 
                 // Download and extract sources
-                sh 'wget -O- https://gnuftp.uib.no/screen/screen-${VERSION}.tar.gz | tar --strip-components=1 -xzv -C build'
+                sh 'wget -O- https://gnuftp.uib.no/screen/screen-${params.VERSION}.tar.gz | tar --strip-components=1 -xzv -C build'
 
                 // Run autoconf/autogen script if any
                 dir('build') {
