@@ -24,7 +24,7 @@ pipeline {
                 // Download and extract sources
                 sh "wget -O- https://download.samba.org/pub/rsync/src/rsync-${params.VERSION}.tar.gz | tar --strip-components=1 -xzv"
 
-                sh  'LDFLAGS="-static" ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-acl-support --enable-xattr-support --enable-xxhash --with-rrsync --without-included-popt --without-included-zlib --disable-md2man --disable-openssl'
+                sh  'LDFLAGS="-static" ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-acl-support --enable-xattr-support --disable-xxhash --with-rrsync --without-included-popt --without-included-zlib --disable-md2man --disable-openssl --disable-zstd --disable-lz4'
 
                 sh '''printf '#!/bin/sh\n\necho "#define RSYNC_GITVER RSYNC_VERSION" >git-version.h\n' >mkgitver'''
             }
