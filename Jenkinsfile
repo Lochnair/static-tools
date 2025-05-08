@@ -26,7 +26,7 @@ pipeline {
 
                 sh  'LDFLAGS="-static" ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-acl-support --enable-xattr-support --enable-xxhash --with-rrsync --without-included-popt --without-included-zlib --disable-md2man --disable-openssl'
 
-                sh "printf '#!/bin/sh\n\necho "#define RSYNC_GITVER RSYNC_VERSION" >git-version.h\n' >mkgitver"
+                sh '''printf '#!/bin/sh\n\necho "#define RSYNC_GITVER RSYNC_VERSION" >git-version.h\n' >mkgitver'''
             }
         }
 
