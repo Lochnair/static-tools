@@ -26,7 +26,7 @@ pipeline {
                 sh 'rm -fv testsuite/itemize.test'
                 sh 'patch -p1 < dont-use-nobody.patch'
 
-                sh  'LDFLAGS="-static" ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-acl-support --enable-xattr-support --enable-xxhash --with-rrsync --without-included-popt --without-included-zlib --disable-md2man'
+                sh  'LDFLAGS="-static" ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-acl-support --enable-xattr-support --disable-xxhash --with-rrsync --without-included-popt --without-included-zlib --disable-md2man'
 
                 sh '''printf '#!/bin/sh\n\necho "#define RSYNC_GITVER RSYNC_VERSION" >git-version.h\n' >mkgitver'''
             }
