@@ -19,14 +19,14 @@ pipeline {
 
 
                 // Install build dependencies
-                sh 'doas apk add autoconf automake acl-dev attr-dev lz4-dev perl popt-dev xxhash-dev zlib-dev zstd-dev'
+                sh 'doas apk add autoconf automake acl-dev acl-static attr-dev lz4-dev lz4-static perl popt-dev openssl-dev openssl-libs-static zlib-dev zlib-static zstd-dev zstd-static'
 
                 // Download and extract sources
                 sh "wget -O- https://download.samba.org/pub/rsync/src/rsync-${params.VERSION}.tar.gz | tar --strip-components=1 -xzv"
                 sh 'rm -fv testsuite/itemize.test'
                 sh 'patch -p1 < dont-use-nobody.patch'
 
-                sh  'LDFLAGS="-static" ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-acl-support --enable-xattr-support --disable-xxhash --with-rrsync --without-included-popt --without-included-zlib --disable-md2man --disable-openssl --disable-zstd --disable-lz4'
+                sh  'LDFLAGS="-static" ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-acl-support --enable-xattr-support --enable-xxhash --with-rrsync --without-included-popt --without-included-zlib --disable-md2man'
 
                 sh '''printf '#!/bin/sh\n\necho "#define RSYNC_GITVER RSYNC_VERSION" >git-version.h\n' >mkgitver'''
             }
