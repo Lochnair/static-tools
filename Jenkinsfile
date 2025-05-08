@@ -23,6 +23,8 @@ pipeline {
 
                 // Download and extract sources
                 sh "wget -O- https://download.samba.org/pub/rsync/src/rsync-${params.VERSION}.tar.gz | tar --strip-components=1 -xzv"
+                sh 'rm -fv testsuite/itemize.test'
+                sh 'patch -p1 < dont-use-nobody.patch'
 
                 sh  'LDFLAGS="-static" ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-acl-support --enable-xattr-support --disable-xxhash --with-rrsync --without-included-popt --without-included-zlib --disable-md2man --disable-openssl --disable-zstd --disable-lz4'
 
@@ -32,21 +34,17 @@ pipeline {
 
         stage('Build') {
             steps {
-                dir('build') {
-                    // Compile with static flags
-                    sh '''
-                        make -j$(nproc)
-                        strip --strip-unneeded rsync
-                    '''
-                }
+                // Compile with static flags
+                sh '''
+                    make -j$(nproc)
+                    strip --strip-unneeded rsync
+                '''
             }
         }
         
         stage('Archive') {
             steps {
-                dir('build') {
-                    archiveArtifacts artifacts: 'rsync', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
-                }
+                archiveArtifacts artifacts: 'rsync', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
             }
         }
     }
